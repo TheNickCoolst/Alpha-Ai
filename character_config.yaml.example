@@ -1,6 +1,6 @@
-OPENAI_API_KEY: sk-YOUR_API_KEY_HERE
+GROQ_API_KEY: gsk_YOUR_API_KEY_HERE
 history_file: chat_history.json
-model: "gpt-4o-mini"
+model: "llama-3.3-70b-versatile"
 
 # Maximum number of messages to keep in chat history
 # This prevents memory issues during long conversations

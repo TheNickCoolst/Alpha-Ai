@@ -1,7 +1,7 @@
 """
 Alpha AI LLM Module - ENHANCED
 
-Handles conversation with OpenAI's GPT models, including:
+Handles conversation with Groq's LLM models, including:
 - Conversation history management with memory limits
 - System prompt configuration
 - Response generation with timeout handling
@@ -11,31 +11,27 @@ import yaml
 import json
 import os
 import time
-from openai import OpenAI, APITimeoutError, APIConnectionError, RateLimitError
+from groq import Groq
+from groq import APITimeoutError, APIConnectionError, RateLimitError
 
 with open('character_config.yaml', 'r', encoding='utf-8') as f:
     char_config = yaml.safe_load(f)
 
-client = OpenAI(
-    api_key=char_config['OPENAI_API_KEY'],
+client = Groq(
+    api_key=char_config['GROQ_API_KEY'],
     timeout=30.0,  # 30 second timeout
     max_retries=2
 )
 
 # Constants
 HISTORY_FILE = char_config.get('history_file', 'chat_history.json')
-MODEL = char_config.get('model', 'gpt-4o-mini')
+MODEL = char_config.get('model', 'llama-3.3-70b-versatile')
 MAX_HISTORY_MESSAGES = char_config.get('max_history_messages', 50)  # Limit history to prevent memory issues
 
 SYSTEM_PROMPT = [
     {
         "role": "system",
-        "content": [
-            {
-                "type": "input_text",
-                "text": char_config['presets']['default']['system_prompt']
-            }
-        ]
+        "content": char_config['presets']['default']['system_prompt']
     }
 ]
 
@@ -89,7 +85,7 @@ def save_history(history):
 
 def get_ai_response(messages, retry_count=0, max_retries=3):
     """
-    Get AI response from OpenAI API with timeout handling and retries.
+    Get AI response from Groq API with timeout handling and retries.
 
     Args:
         messages: List of message dictionaries with conversation history
@@ -97,27 +93,22 @@ def get_ai_response(messages, retry_count=0, max_retries=3):
         max_retries: Maximum number of retries
 
     Returns:
-        OpenAI API response object or None on failure
+        Groq API response object or None on failure
     """
     try:
-        # Call OpenAI with system prompt + history
-        response = client.responses.create(
+        # Call Groq with system prompt + history
+        response = client.chat.completions.create(
             model=MODEL,
-            input=messages,
+            messages=messages,
             temperature=1,
             top_p=1,
-            max_output_tokens=2048,
-            stream=False,
-            text={
-                "format": {
-                    "type": "text"
-                }
-            },
+            max_tokens=2048,
+            stream=False
         )
         return response
 
     except APITimeoutError as e:
-        print(f"⚠️  OpenAI API timeout (attempt {retry_count + 1}/{max_retries})")
+        print(f"⚠️  Groq API timeout (attempt {retry_count + 1}/{max_retries})")
         if retry_count < max_retries:
             wait_time = 2 ** retry_count  # Exponential backoff: 1s, 2s, 4s
             print(f"⏳ Retrying in {wait_time} seconds...")
@@ -128,7 +119,7 @@ def get_ai_response(messages, retry_count=0, max_retries=3):
             return None
 
     except APIConnectionError as e:
-        print(f"⚠️  Connection error: Cannot reach OpenAI API")
+        print(f"⚠️  Connection error: Cannot reach Groq API")
         print(f"⚠️  Check your internet connection")
         if retry_count < max_retries:
             wait_time = 2 ** retry_count
@@ -147,7 +138,7 @@ def get_ai_response(messages, retry_count=0, max_retries=3):
         return None
 
     except Exception as e:
-        print(f"❌ Unexpected error calling OpenAI API: {e}")
+        print(f"❌ Unexpected error calling Groq API: {e}")
         return None
 
 
@@ -170,9 +161,7 @@ def llm_response(user_input):
     # Append user message to memory
     messages.append({
         "role": "user",
-        "content": [
-            {"type": "input_text", "text": user_input}
-        ]
+        "content": user_input
     })
 
     # Get AI response with retry logic
@@ -184,16 +173,17 @@ def llm_response(user_input):
         # Don't save failed interactions to history
         return fallback_text
 
+    # Extract response text from Groq API response
+    response_text = ai_response.choices[0].message.content
+
     # Append assistant message to conversation history
     messages.append({
         "role": "assistant",
-        "content": [
-            {"type": "output_text", "text": ai_response.output_text}
-        ]
+        "content": response_text
     })
 
     save_history(messages)
-    return ai_response.output_text
+    return response_text
 
 
 if __name__ == "__main__":

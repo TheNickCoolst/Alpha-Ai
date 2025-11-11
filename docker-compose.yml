@@ -23,8 +23,8 @@ services:
       # Logs
       - ./logs:/app/logs
     environment:
-      # OpenAI Configuration
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      # Groq Configuration
+      - GROQ_API_KEY=${GROQ_API_KEY}
       # GPU Configuration
       - CUDA_VISIBLE_DEVICES=0
       - NVIDIA_VISIBLE_DEVICES=0

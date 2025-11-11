@@ -1,12 +1,12 @@
 # Alpha AI Voice Assistant
 
-Alpha AI is an advanced voice-powered AI assistant that listens and remembers your conversations. It combines OpenAI's GPT, GPT-SoVITS voice synthesis, and Faster-Whisper ASR into a fully configurable conversational pipeline.
+Alpha AI is an advanced voice-powered AI assistant that listens and remembers your conversations. It combines Groq's LLM API, GPT-SoVITS voice synthesis, and Faster-Whisper ASR into a fully configurable conversational pipeline.
 
 **Tested with Python 3.10+ on Windows 10+ and Linux Ubuntu**
 
 ## ✨ Features
 
-- 💬 **LLM-based dialogue** using OpenAI API (configurable system prompts)
+- 💬 **LLM-based dialogue** using Groq API (configurable system prompts)
 - 🧠 **Conversation memory** to keep context during interactions
 - 🔊 **Voice generation** via GPT-SoVITS API
 - 🎧 **Speech recognition** using Faster-Whisper
@@ -19,9 +19,9 @@ Alpha AI is an advanced voice-powered AI assistant that listens and remembers yo
 All prompts and parameters are stored in `character_config.yaml`.
 
 ```yaml
-OPENAI_API_KEY: sk-YOURAPIKEY
+GROQ_API_KEY: gsk_YOURAPIKEY
 history_file: chat_history.json
-model: "gpt-4o-mini"
+model: "llama-3.3-70b-versatile"
 presets:
   default:
     system_prompt: |
@@ -97,7 +97,7 @@ Follow the [GPT-SoVITS documentation](https://github.com/RVC-Boss/GPT-SoVITS) to
 ### 2. Configure Your Settings
 
 Edit `character_config.yaml` with your:
-- OpenAI API key
+- Groq API key
 - Voice sample path
 - Desired personality/system prompt
 
@@ -112,7 +112,7 @@ python main_chat.py
 
 1. Alpha listens to your voice via microphone (push-to-talk)
 2. Transcribes your speech with Faster-Whisper
-3. Sends the text to OpenAI GPT (with conversation history)
+3. Sends the text to Groq LLM (with conversation history)
 4. Generates an intelligent response
 5. Synthesizes Alpha's voice using GPT-SoVITS
 6. Plays the audio response back to you
@@ -173,7 +173,7 @@ Ensure you have:
 
 * Voice synthesis powered by [GPT-SoVITS](https://github.com/RVC-Boss/GPT-SoVITS)
 * ASR via [Faster-Whisper](https://github.com/SYSTRAN/faster-whisper)
-* Language model via [OpenAI GPT](https://platform.openai.com)
+* Language model via [Groq API](https://groq.com)
 
 
 ## 📜 License

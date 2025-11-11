@@ -49,5 +49,5 @@ noisereduce>=3.0.0  # Audio noise reduction
 silero-vad>=5.0  # Voice Activity Detection
 sounddevice>=0.4.6  # Audio I/O
 soundfile>=0.12.1  # Audio file handling
-openai>=1.0.0  # OpenAI API client
+groq>=0.4.0  # Groq API client
 requests>=2.31.0  # HTTP requests for TTS

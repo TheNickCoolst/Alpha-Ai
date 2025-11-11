@@ -11,7 +11,8 @@ Improvements:
 import yaml
 import json
 import os
-from openai import OpenAI, OpenAIError, APIError, RateLimitError, APITimeoutError
+from groq import Groq
+from groq import RateLimitError, APITimeoutError, APIConnectionError, GroqError
 import time
 import logging
 from pathlib import Path
@@ -49,16 +50,16 @@ def load_config():
             config = yaml.safe_load(f)
 
         # Validate required keys
-        required_keys = ['OPENAI_API_KEY', 'model', 'history_file', 'presets']
+        required_keys = ['GROQ_API_KEY', 'model', 'history_file', 'presets']
         for key in required_keys:
             if key not in config:
                 raise KeyError(f"❌ Required key '{key}' missing in {config_path}")
 
         # Validate API key format
-        api_key = config['OPENAI_API_KEY']
-        if api_key == 'sk-YOURAPIKEY' or not api_key.startswith('sk-'):
+        api_key = config['GROQ_API_KEY']
+        if api_key == 'gsk_YOURAPIKEY' or not api_key.startswith('gsk_'):
             raise ValueError(
-                "❌ Please set a valid OpenAI API key in character_config.yaml"
+                "❌ Please set a valid Groq API key in character_config.yaml"
             )
 
         logger.info(f"✓ Configuration loaded successfully")
@@ -75,8 +76,8 @@ def load_config():
 # Load configuration
 try:
     char_config = load_config()
-    client = OpenAI(api_key=char_config['OPENAI_API_KEY'])
-    logger.info("✓ OpenAI client initialized")
+    client = Groq(api_key=char_config['GROQ_API_KEY'])
+    logger.info("✓ Groq client initialized")
 except Exception as e:
     logger.error(f"Failed to initialize: {e}")
     raise
@@ -87,12 +88,7 @@ MODEL = char_config['model']
 SYSTEM_PROMPT = [
     {
         "role": "system",
-        "content": [
-            {
-                "type": "input_text",
-                "text": char_config['presets']['default']['system_prompt']
-            }
-        ]
+        "content": char_config['presets']['default']['system_prompt']
     }
 ]
 
@@ -183,18 +179,13 @@ def get_ai_response(messages, max_retries=3):
         try:
             logger.debug(f"Requesting AI response (attempt {attempt + 1}/{max_retries})")
 
-            response = client.responses.create(
+            response = client.chat.completions.create(
                 model=MODEL,
-                input=messages,
+                messages=messages,
                 temperature=1,
                 top_p=1,
-                max_output_tokens=2048,
-                stream=False,
-                text={
-                    "format": {
-                        "type": "text"
-                    }
-                },
+                max_tokens=2048,
+                stream=False
             )
 
             logger.info("✓ AI response received")
@@ -219,18 +210,18 @@ def get_ai_response(messages, max_retries=3):
                 logger.error("❌ API timeout: Maximum retries exceeded")
                 return None
 
-        except APIError as e:
-            logger.error(f"❌ OpenAI API error: {e}")
+        except APIConnectionError as e:
+            logger.error(f"❌ Groq API connection error: {e}")
 
-            # Retry on server errors (5xx)
-            if attempt < max_retries - 1 and hasattr(e, 'status_code') and e.status_code >= 500:
-                logger.info("🔄 Retrying due to server error...")
+            # Retry on connection errors
+            if attempt < max_retries - 1:
+                logger.info("🔄 Retrying due to connection error...")
                 time.sleep(2)
             else:
                 return None
 
-        except OpenAIError as e:
-            logger.error(f"❌ OpenAI error: {e}")
+        except GroqError as e:
+            logger.error(f"❌ Groq error: {e}")
             return None
 
         except Exception as e:
@@ -257,9 +248,7 @@ def llm_response(user_input):
         # Add user message
         messages.append({
             "role": "user",
-            "content": [
-                {"type": "input_text", "text": user_input}
-            ]
+            "content": user_input
         })
 
         # Get AI response
@@ -276,22 +265,18 @@ def llm_response(user_input):
             # Save history with fallback (maintain conversation flow)
             messages.append({
                 "role": "assistant",
-                "content": [
-                    {"type": "output_text", "text": fallback_msg}
-                ]
+                "content": fallback_msg
             })
             save_history(messages)
             return fallback_msg
 
-        # Normal processing
-        response_text = ai_response.output_text
+        # Normal processing - extract response from Groq format
+        response_text = ai_response.choices[0].message.content
 
         # Add assistant message to history
         messages.append({
             "role": "assistant",
-            "content": [
-                {"type": "output_text", "text": response_text}
-            ]
+            "content": response_text
         })
 
         # Save updated history
@@ -329,12 +314,11 @@ def health_check():
         health["history_readable"] = True
 
         # Check API (quick test)
-        test_response = client.responses.create(
+        test_response = client.chat.completions.create(
             model=MODEL,
-            input=[{"role": "user", "content": [{"type": "input_text", "text": "test"}]}],
-            max_output_tokens=1,
-            stream=False,
-            text={"format": {"type": "text"}}
+            messages=[{"role": "user", "content": "test"}],
+            max_tokens=1,
+            stream=False
         )
         health["api_accessible"] = True
 

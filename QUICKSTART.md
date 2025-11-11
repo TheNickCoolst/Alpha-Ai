@@ -43,10 +43,10 @@ main.bat
 
 Beim ersten Start öffnet sich automatisch `character_config.yaml`.
 
-Ersetze `sk-YOUR_API_KEY_HERE` mit deinem echten OpenAI API-Key:
+Ersetze `gsk_YOUR_API_KEY_HERE` mit deinem echten Groq API-Key:
 
 ```yaml
-OPENAI_API_KEY: sk-proj-abc123...dein_echter_key
+GROQ_API_KEY: gsk_abc123...dein_echter_key
 ```
 
 Speichern und Notepad schließen.
@@ -62,7 +62,7 @@ Alpha AI startet automatisch. Du siehst:
 
 [1/3] Validating configuration...
 ✓ Configuration valid
-✓ Model: gpt-4o-mini
+✓ Model: llama-3.3-70b-versatile
 ✓ History limit: 50 messages
 
 [2/3] Setting up directories...
@@ -154,16 +154,16 @@ choco install ffmpeg
 
 ---
 
-### "OpenAI API timeout"
+### "Groq API timeout"
 
 ```
-⚠️  OpenAI API timeout (attempt 1/3)
+⚠️  Groq API timeout (attempt 1/3)
 ⏳ Retrying in 1 seconds...
 ```
 
 **Ursachen:**
 - Langsames Internet
-- OpenAI Server überlastet
+- Groq Server überlastet
 - API-Key falsch
 
 **Was tut das System:**
@@ -241,14 +241,14 @@ Bei langen Gesprächen:
 ### character_config.yaml
 
 ```yaml
-# OpenAI API-Key (ERFORDERLICH)
-OPENAI_API_KEY: sk-proj-your_key_here
+# Groq API-Key (ERFORDERLICH)
+GROQ_API_KEY: gsk_your_key_here
 
 # Chat-Verlauf (Standard: chat_history.json)
 history_file: chat_history.json
 
-# AI-Model (Standard: gpt-4o-mini)
-model: "gpt-4o-mini"
+# AI-Model (Standard: llama-3.3-70b-versatile)
+model: "llama-3.3-70b-versatile"
 
 # Max. Nachrichten im Speicher (Standard: 50)
 # Höher = mehr Kontext, aber mehr Speicher
@@ -309,7 +309,7 @@ sovits_ping_config:
 │    ↓ (Silero VAD)                                       │
 │ 4. Faster-Whisper Transkription                         │
 │    ↓ (Speech → Text)                                    │
-│ 5. OpenAI GPT-4o-mini                                   │
+│ 5. Groq llama-3.3-70b-versatile                         │
 │    ↓ (+ Retry Logic)                                    │
 │ 6. AI-Antwort generieren                                │
 │    ↓                                                     │
@@ -339,7 +339,7 @@ Bei Fehlern: Bitte den kompletten Output der Konsole kopieren und im Issue poste
 
 ### Was du brauchst
 - ✅ Python 3.10+
-- ✅ OpenAI API-Key
+- ✅ Groq API-Key
 - ✅ Internet-Verbindung
 
 ### Was du tust

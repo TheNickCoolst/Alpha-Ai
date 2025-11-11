@@ -123,9 +123,9 @@ REM Create config file if it doesn't exist
 if not exist "character_config.yaml" (
     echo [INFO] Creating character_config.yaml template...
     (
-        echo OPENAI_API_KEY: sk-YOUR_API_KEY_HERE
+        echo GROQ_API_KEY: gsk_YOUR_API_KEY_HERE
         echo history_file: chat_history.json
-        echo model: "gpt-4o-mini"
+        echo model: "llama-3.3-70b-versatile"
         echo.
         echo presets:
         echo   default:

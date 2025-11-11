@@ -244,9 +244,9 @@ function Initialize-ConfigFile {
         Write-Info "Creating character_config.yaml template..."
 
         $configTemplate = @"
-OPENAI_API_KEY: sk-YOUR_API_KEY_HERE
+GROQ_API_KEY: gsk_YOUR_API_KEY_HERE
 history_file: chat_history.json
-model: "gpt-4o-mini"
+model: "llama-3.3-70b-versatile"
 
 presets:
   default:

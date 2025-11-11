@@ -37,7 +37,7 @@ def validate_config(config_path='character_config.yaml'):
 
     # Validate required fields
     required_fields = {
-        'OPENAI_API_KEY': str,
+        'GROQ_API_KEY': str,
         'history_file': str,
         'model': str,
     }
@@ -48,13 +48,13 @@ def validate_config(config_path='character_config.yaml'):
         elif not isinstance(config[field], expected_type):
             errors.append(f"Field '{field}' must be of type {expected_type.__name__}")
 
-    # Validate OpenAI API key format
-    if 'OPENAI_API_KEY' in config:
-        api_key = config['OPENAI_API_KEY']
-        if api_key == 'sk-YOUR_API_KEY_HERE' or api_key == 'sk-YOURAPIKEY':
-            errors.append("Please replace OPENAI_API_KEY with your actual OpenAI API key")
-        elif not api_key.startswith('sk-'):
-            errors.append("OPENAI_API_KEY should start with 'sk-'")
+    # Validate Groq API key format
+    if 'GROQ_API_KEY' in config:
+        api_key = config['GROQ_API_KEY']
+        if api_key == 'gsk_YOUR_API_KEY_HERE' or api_key == 'gsk_YOURAPIKEY':
+            errors.append("Please replace GROQ_API_KEY with your actual Groq API key")
+        elif not api_key.startswith('gsk_'):
+            errors.append("GROQ_API_KEY should start with 'gsk_'")
 
     # Validate presets
     if 'presets' not in config:
