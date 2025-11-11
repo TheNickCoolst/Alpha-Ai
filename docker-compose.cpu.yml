@@ -1,0 +1,70 @@
+version: '3.8'
+
+# CPU-only version for systems without NVIDIA GPU
+
+services:
+  # Alpha AI Main Service (CPU)
+  alpha-ai:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: cpu-base
+    container_name: alpha-ai-cpu
+    hostname: alpha-ai
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./character_config.yaml:/app/character_config.yaml:ro
+      - ./chat_history.json:/app/chat_history.json
+      - ./character_files:/app/character_files:ro
+      - ./audio:/app/audio
+      - ./logs:/app/logs
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - PYTHONUNBUFFERED=1
+    depends_on:
+      - gpt-sovits
+    restart: unless-stopped
+    networks:
+      - alpha-ai-network
+
+  # GPT-SoVITS TTS Server (CPU)
+  gpt-sovits:
+    image: breakstring/gpt-sovits:cpu
+    container_name: gpt-sovits-cpu
+    hostname: gpt-sovits
+    ports:
+      - "9880:9880"
+    volumes:
+      - ./sovits_models:/app/models
+      - ./character_files:/app/references:ro
+    restart: unless-stopped
+    networks:
+      - alpha-ai-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9880/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Optional: Ollama (CPU)
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama-cpu
+    hostname: ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama-data:/root/.ollama
+    restart: unless-stopped
+    networks:
+      - alpha-ai-network
+
+volumes:
+  ollama-data:
+    driver: local
+
+networks:
+  alpha-ai-network:
+    driver: bridge

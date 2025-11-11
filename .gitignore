@@ -59,3 +59,25 @@ models/
 
 # Logs
 *.log
+logs/
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.hypothesis/
+pytest.xml
+coverage.xml
+
+# Docker
+.docker/
+docker-volumes/
+
+# CI/CD artifacts
+bandit-report.json
+
+# Temporary files
+*.tmp
+*.bak
+*.backup
