@@ -40,7 +40,32 @@ You can define custom personalities by modifying the config file.
 
 ## 🛠️ Setup
 
-### Quick Installation
+### Quick Installation (Windows 11)
+
+Alpha AI provides automated installation scripts for Windows 11:
+
+**Option 1: PowerShell (Recommended)**
+```powershell
+# Right-click PowerShell and "Run as Administrator"
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+.\install_alpha_ai.ps1
+```
+
+**Option 2: Batch Script**
+```cmd
+install_alpha_ai.bat
+```
+
+Both scripts will:
+- ✓ Check for Python 3.10+ (install via winget if missing)
+- ✓ Check for FFmpeg (install via winget if missing)
+- ✓ Create a virtual environment
+- ✓ Install all Python dependencies
+- ✓ Optionally install GPU support (CUDA)
+- ✓ Set up project structure
+- ✓ Create configuration template
+
+### Quick Installation (Linux/Mac)
 
 Run the installation script:
 
@@ -53,7 +78,7 @@ chmod +x install_alpha_ai.sh
 
 ```bash
 pip install uv
-uv pip install -r requirements-alpha-ai.txt
+uv pip install -r requirements.txt
 ```
 
 **For GPU support with Faster Whisper:**
@@ -92,6 +117,47 @@ python main_chat.py
 5. Synthesizes Alpha's voice using GPT-SoVITS
 6. Plays the audio response back to you
 
+
+## 🔧 Troubleshooting (Windows)
+
+### PowerShell Script Won't Run
+If you get an error about execution policies:
+```powershell
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+```
+
+### Python Not Found
+Make sure Python is added to PATH during installation. You can verify with:
+```cmd
+python --version
+```
+
+If not found, reinstall Python from [python.org](https://www.python.org/downloads/) and check "Add Python to PATH"
+
+### FFmpeg Not Found
+Install FFmpeg using winget:
+```cmd
+winget install Gyan.FFmpeg
+```
+
+Or download manually from [ffmpeg.org](https://www.ffmpeg.org/download.html)
+
+### Virtual Environment Issues
+If activation fails, try:
+```powershell
+.\.venv\Scripts\Activate.ps1
+```
+
+Or for Command Prompt:
+```cmd
+.venv\Scripts\activate.bat
+```
+
+### GPU Support Not Working
+Ensure you have:
+- NVIDIA GPU with CUDA capability
+- Latest NVIDIA drivers installed
+- CUDA Toolkit installed from [NVIDIA Developer](https://developer.nvidia.com/cuda-downloads)
 
 ## 📌 TODO / Future Improvements
 
