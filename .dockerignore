@@ -1,0 +1,92 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Python
+__pycache__
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.hypothesis/
+
+# Documentation
+*.md
+!README.md
+docs/
+
+# CI/CD
+.github/
+
+# Audio files (temporary)
+audio/*.wav
+*.mp3
+*.ogg
+
+# Logs
+*.log
+logs/
+
+# Large models (download separately)
+*.pt
+*.pth
+*.ckpt
+*.safetensors
+
+# Configuration (should be mounted)
+character_config.yaml
+chat_history.json
+!character_config.yaml.example
+
+# Docker
+docker-compose*.yml
+Dockerfile*
+.dockerignore
+
+# Scripts
+*.sh
+*.ps1
+*.bat
+!install_*.sh
+!install_*.ps1
+!install_*.bat
