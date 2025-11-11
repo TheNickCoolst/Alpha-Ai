@@ -14,45 +14,77 @@ echo   Alpha AI - One-Click Launcher
 echo ========================================
 echo.
 
-REM Check if Python is installed
+REM Find compatible Python version (3.10-3.13)
+set PYTHON_CMD=python
+set PYTHON_VERSION=
+set PYTHON_MAJOR=
+set PYTHON_MINOR=
+
+REM Try py launcher with specific versions first (Windows Python Launcher)
+for %%v in (3.13 3.12 3.11 3.10) do (
+    py -%%v --version >nul 2>&1
+    if not errorlevel 1 (
+        set PYTHON_CMD=py -%%v
+        for /f "tokens=2" %%i in ('py -%%v --version 2^>^&1') do set PYTHON_VERSION=%%i
+        goto :python_found
+    )
+)
+
+REM Try default python command
 python --version >nul 2>&1
-if errorlevel 1 (
-    echo [ERROR] Python ist nicht installiert!
-    echo.
-    echo Bitte installiere Python 3.10-3.13 von:
-    echo https://www.python.org/downloads/
-    echo.
-    echo Wichtig: "Add Python to PATH" waehlen!
-    echo.
-    pause
-    exit /b 1
-)
+if not errorlevel 1 (
+    for /f "tokens=2" %%i in ('python --version 2^>^&1') do set PYTHON_VERSION=%%i
+    for /f "tokens=1,2 delims=." %%a in ("!PYTHON_VERSION!") do (
+        set PYTHON_MAJOR=%%a
+        set PYTHON_MINOR=%%b
+    )
 
-REM Check Python version compatibility (3.10-3.13 required for onnxruntime-gpu)
-for /f "tokens=2" %%i in ('python --version 2^>^&1') do set PYTHON_VERSION=%%i
-for /f "tokens=1,2 delims=." %%a in ("!PYTHON_VERSION!") do (
-    set PYTHON_MAJOR=%%a
-    set PYTHON_MINOR=%%b
-)
-
-if defined PYTHON_MAJOR (
-    if !PYTHON_MAJOR! EQU 3 (
-        if defined PYTHON_MINOR (
-            if !PYTHON_MINOR! GTR 13 (
-                echo [ERROR] Python 3.14+ wird noch nicht unterstuetzt!
-                echo.
-                echo Das onnxruntime-gpu Paket unterstuetzt nur Python 3.10-3.13.
-                echo Aktuelle Version: !PYTHON_VERSION!
-                echo.
-                echo Bitte installiere Python 3.13 von:
-                echo https://www.python.org/downloads/release/python-3130/
-                echo.
-                pause
-                exit /b 1
+    REM Check if default python is compatible
+    if defined PYTHON_MINOR (
+        if !PYTHON_MINOR! GEQ 10 (
+            if !PYTHON_MINOR! LEQ 13 (
+                set PYTHON_CMD=python
+                goto :python_found
             )
         )
     )
 )
+
+REM Try python3 command
+python3 --version >nul 2>&1
+if not errorlevel 1 (
+    for /f "tokens=2" %%i in ('python3 --version 2^>^&1') do set PYTHON_VERSION=%%i
+    for /f "tokens=1,2 delims=." %%a in ("!PYTHON_VERSION!") do (
+        set PYTHON_MAJOR=%%a
+        set PYTHON_MINOR=%%b
+    )
+
+    REM Check if python3 is compatible
+    if defined PYTHON_MINOR (
+        if !PYTHON_MINOR! GEQ 10 (
+            if !PYTHON_MINOR! LEQ 13 (
+                set PYTHON_CMD=python3
+                goto :python_found
+            )
+        )
+    )
+)
+
+REM No compatible Python found
+echo [ERROR] Keine kompatible Python-Version (3.10-3.13) gefunden!
+echo.
+echo Gefundene Version: !PYTHON_VERSION!
+echo.
+echo Loesungsvorschlaege:
+echo 1. Installiere Python 3.13 von: https://www.python.org/downloads/release/python-3130/
+echo 2. Falls bereits installiert, verwende: py -3.13 anstelle von python
+echo 3. Passe deinen PATH an, damit Python 3.13 zuerst kommt
+echo.
+pause
+exit /b 1
+
+:python_found
+echo [OK] Python !PYTHON_VERSION! wird verwendet (!PYTHON_CMD!)
 
 REM Check if virtual environment exists
 if not exist ".venv\Scripts\activate.bat" (

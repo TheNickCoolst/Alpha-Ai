@@ -13,57 +13,78 @@ echo   Alpha AI Voice Assistant Installer
 echo ========================================
 echo.
 
-REM Check if Python is installed
+REM Find compatible Python version (3.10-3.13)
 echo [1/6] Checking Python installation...
+set PYTHON_CMD=python
+set PYTHON_VERSION=
+set PYTHON_MAJOR=
+set PYTHON_MINOR=
+
+REM Try py launcher with specific versions first (Windows Python Launcher)
+for %%v in (3.13 3.12 3.11 3.10) do (
+    py -%%v --version >nul 2>&1
+    if not errorlevel 1 (
+        set PYTHON_CMD=py -%%v
+        for /f "tokens=2" %%i in ('py -%%v --version 2^>^&1') do set PYTHON_VERSION=%%i
+        goto :python_found
+    )
+)
+
+REM Try default python command
 python --version >nul 2>&1
-if errorlevel 1 (
-    echo [ERROR] Python is not installed or not in PATH!
-    echo.
-    echo Please install Python 3.10-3.13 from:
-    echo https://www.python.org/downloads/
-    echo.
-    echo Make sure to check "Add Python to PATH" during installation!
-    pause
-    exit /b 1
-)
-
-for /f "tokens=2" %%i in ('python --version 2^>^&1') do set PYTHON_VERSION=%%i
-echo [OK] Python !PYTHON_VERSION! found
-
-REM Check Python version compatibility (3.10-3.13 required for onnxruntime-gpu)
-for /f "tokens=1,2 delims=." %%a in ("!PYTHON_VERSION!") do (
-    set PYTHON_MAJOR=%%a
-    set PYTHON_MINOR=%%b
-)
-
-if !PYTHON_MAJOR! LSS 3 (
-    echo [ERROR] Python 3.10 or higher is required!
-    echo Current version: !PYTHON_VERSION!
-    pause
-    exit /b 1
-)
-
-if !PYTHON_MAJOR! EQU 3 (
-    if !PYTHON_MINOR! LSS 10 (
-        echo [ERROR] Python 3.10 or higher is required!
-        echo Current version: !PYTHON_VERSION!
-        pause
-        exit /b 1
+if not errorlevel 1 (
+    for /f "tokens=2" %%i in ('python --version 2^>^&1') do set PYTHON_VERSION=%%i
+    for /f "tokens=1,2 delims=." %%a in ("!PYTHON_VERSION!") do (
+        set PYTHON_MAJOR=%%a
+        set PYTHON_MINOR=%%b
     )
-    if !PYTHON_MINOR! GTR 13 (
-        echo [ERROR] Python 3.14+ is not yet supported!
-        echo.
-        echo The onnxruntime-gpu package currently only supports Python 3.10-3.13.
-        echo Current version: !PYTHON_VERSION!
-        echo.
-        echo Please install Python 3.13 from:
-        echo https://www.python.org/downloads/release/python-3130/
-        echo.
-        pause
-        exit /b 1
+
+    REM Check if default python is compatible
+    if defined PYTHON_MINOR (
+        if !PYTHON_MINOR! GEQ 10 (
+            if !PYTHON_MINOR! LEQ 13 (
+                set PYTHON_CMD=python
+                goto :python_found
+            )
+        )
     )
 )
-echo [OK] Python version is compatible
+
+REM Try python3 command
+python3 --version >nul 2>&1
+if not errorlevel 1 (
+    for /f "tokens=2" %%i in ('python3 --version 2^>^&1') do set PYTHON_VERSION=%%i
+    for /f "tokens=1,2 delims=." %%a in ("!PYTHON_VERSION!") do (
+        set PYTHON_MAJOR=%%a
+        set PYTHON_MINOR=%%b
+    )
+
+    REM Check if python3 is compatible
+    if defined PYTHON_MINOR (
+        if !PYTHON_MINOR! GEQ 10 (
+            if !PYTHON_MINOR! LEQ 13 (
+                set PYTHON_CMD=python3
+                goto :python_found
+            )
+        )
+    )
+)
+
+REM No compatible Python found
+echo [ERROR] No compatible Python version (3.10-3.13) found!
+echo.
+echo Detected version: !PYTHON_VERSION!
+echo.
+echo Solutions:
+echo 1. Install Python 3.13 from: https://www.python.org/downloads/release/python-3130/
+echo 2. If already installed, make sure it's in PATH
+echo 3. Or use: py -3.13 to run Python 3.13 specifically
+echo.
+pause
+exit /b 1
+
+:python_found
+echo [OK] Python !PYTHON_VERSION! found and will be used (!PYTHON_CMD!)
 echo.
 
 REM Check if FFmpeg is installed
@@ -98,8 +119,8 @@ if exist ".venv" (
 )
 
 if not exist ".venv" (
-    echo [INFO] Creating new virtual environment...
-    python -m venv .venv
+    echo [INFO] Creating new virtual environment with !PYTHON_CMD!...
+    !PYTHON_CMD! -m venv .venv
     if errorlevel 1 (
         echo [ERROR] Failed to create virtual environment
         pause
