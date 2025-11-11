@@ -1,12 +1,19 @@
-OPENAI_API_KEY: sk-YOURAPIKEY
+OPENAI_API_KEY: sk-YOUR_API_KEY_HERE
 history_file: chat_history.json
 model: "gpt-4o-mini"
+
+# Maximum number of messages to keep in chat history
+# This prevents memory issues during long conversations
+# Older messages will be automatically trimmed
+max_history_messages: 50
+
 presets:
   default:
     system_prompt: |
       You are Alpha, an intelligent and helpful AI assistant.
       You are knowledgeable, conversational, and engaging.
       You provide clear and thoughtful responses.
+      Keep your responses concise and natural for voice conversation.
 
 sovits_ping_config:
   text_lang: en
