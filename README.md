@@ -2,7 +2,9 @@
 
 Alpha AI is an advanced voice-powered AI assistant that listens and remembers your conversations. It combines Groq's LLM API, GPT-SoVITS voice synthesis, and Faster-Whisper ASR into a fully configurable conversational pipeline.
 
-**Tested with Python 3.10+ on Windows 10+ and Linux Ubuntu**
+**Requires Python 3.10-3.13 on Windows 10+ and Linux Ubuntu**
+
+> ⚠️ **Important:** Python 3.14 is not yet supported due to `onnxruntime-gpu` compatibility. Please use Python 3.13 or earlier.
 
 ## ✨ Features
 
@@ -57,7 +59,7 @@ install_alpha_ai.bat
 ```
 
 Both scripts will:
-- ✓ Check for Python 3.10+ (install via winget if missing)
+- ✓ Check for Python 3.10-3.13 (install via winget if missing)
 - ✓ Check for FFmpeg (install via winget if missing)
 - ✓ Create a virtual environment
 - ✓ Install all Python dependencies

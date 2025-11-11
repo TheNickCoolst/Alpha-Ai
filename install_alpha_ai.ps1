@@ -45,13 +45,20 @@ function Test-PythonInstallation {
 
     try {
         $pythonVersion = python --version 2>&1
-        if ($pythonVersion -match "Python (\d+\.\d+)") {
-            $version = [version]$matches[1]
-            if ($version -ge [version]"3.10") {
-                Write-Success "Python $version found"
+        if ($pythonVersion -match "Python (\d+\.\d+\.\d+)") {
+            $fullVersion = $matches[1]
+            $version = [version]$fullVersion
+
+            if ($version -ge [version]"3.10" -and $version -lt [version]"3.14") {
+                Write-Success "Python $fullVersion found"
                 return $true
+            } elseif ($version -ge [version]"3.14") {
+                Write-Error "Python $fullVersion detected - Python 3.14+ is not yet supported!"
+                Write-Warning "The onnxruntime-gpu package currently only supports Python 3.10-3.13"
+                Write-Info "Please install Python 3.13 from: https://www.python.org/downloads/release/python-3130/"
+                return $false
             } else {
-                Write-Warning "Python $version found, but version 3.10+ is required"
+                Write-Warning "Python $fullVersion found, but version 3.10-3.13 is required"
                 return $false
             }
         }
@@ -64,12 +71,12 @@ function Test-PythonInstallation {
 
 # Install Python using winget
 function Install-Python {
-    Write-Header "Installing Python 3.12"
+    Write-Header "Installing Python 3.13"
 
     if ($UseWinget) {
         Write-Info "Attempting to install Python via winget..."
         try {
-            winget install Python.Python.3.12 --silent --accept-package-agreements --accept-source-agreements
+            winget install Python.Python.3.13 --silent --accept-package-agreements --accept-source-agreements
             Write-Success "Python installed successfully"
             Write-Info "Please restart your terminal and run this script again"
             exit 0
@@ -78,7 +85,8 @@ function Install-Python {
         }
     }
 
-    Write-Info "Please install Python 3.10+ manually from: https://www.python.org/downloads/"
+    Write-Info "Please install Python 3.10-3.13 manually from: https://www.python.org/downloads/"
+    Write-Info "Important: Python 3.14+ is not yet supported due to onnxruntime-gpu compatibility"
     Write-Info "Make sure to check 'Add Python to PATH' during installation!"
     exit 1
 }

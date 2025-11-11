@@ -19,7 +19,7 @@ python --version >nul 2>&1
 if errorlevel 1 (
     echo [ERROR] Python is not installed or not in PATH!
     echo.
-    echo Please install Python 3.10 or higher from:
+    echo Please install Python 3.10-3.13 from:
     echo https://www.python.org/downloads/
     echo.
     echo Make sure to check "Add Python to PATH" during installation!
@@ -29,6 +29,41 @@ if errorlevel 1 (
 
 for /f "tokens=2" %%i in ('python --version 2^>^&1') do set PYTHON_VERSION=%%i
 echo [OK] Python %PYTHON_VERSION% found
+
+REM Check Python version compatibility (3.10-3.13 required for onnxruntime-gpu)
+for /f "tokens=1,2 delims=." %%a in ("%PYTHON_VERSION%") do (
+    set PYTHON_MAJOR=%%a
+    set PYTHON_MINOR=%%b
+)
+
+if %PYTHON_MAJOR% LSS 3 (
+    echo [ERROR] Python 3.10 or higher is required!
+    echo Current version: %PYTHON_VERSION%
+    pause
+    exit /b 1
+)
+
+if %PYTHON_MAJOR% EQU 3 (
+    if %PYTHON_MINOR% LSS 10 (
+        echo [ERROR] Python 3.10 or higher is required!
+        echo Current version: %PYTHON_VERSION%
+        pause
+        exit /b 1
+    )
+    if %PYTHON_MINOR% GTR 13 (
+        echo [ERROR] Python 3.14+ is not yet supported!
+        echo.
+        echo The onnxruntime-gpu package currently only supports Python 3.10-3.13.
+        echo Current version: %PYTHON_VERSION%
+        echo.
+        echo Please install Python 3.13 from:
+        echo https://www.python.org/downloads/release/python-3130/
+        echo.
+        pause
+        exit /b 1
+    )
+)
+echo [OK] Python version is compatible
 echo.
 
 REM Check if FFmpeg is installed
