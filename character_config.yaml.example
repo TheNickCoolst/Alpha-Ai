@@ -1,0 +1,15 @@
+OPENAI_API_KEY: sk-YOURAPIKEY
+history_file: chat_history.json
+model: "gpt-4o-mini"
+presets:
+  default:
+    system_prompt: |
+      You are Alpha, an intelligent and helpful AI assistant.
+      You are knowledgeable, conversational, and engaging.
+      You provide clear and thoughtful responses.
+
+sovits_ping_config:
+  text_lang: en
+  prompt_lang: en
+  ref_audio_path: character_files/main_sample.wav
+  prompt_text: This is a sample voice for you to get started with.

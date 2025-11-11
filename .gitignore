@@ -1,0 +1,61 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Audio files
+audio/
+*.wav
+*.mp3
+*.flac
+
+# Chat history
+chat_history.json
+
+# API Keys and secrets
+character_config.yaml
+!character_config.yaml.example
+.env
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Git backup
+.git-riko-backup/
+
+# Models
+*.bin
+*.pth
+*.pt
+models/
+
+# Logs
+*.log
