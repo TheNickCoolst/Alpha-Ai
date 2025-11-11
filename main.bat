@@ -30,19 +30,19 @@ if errorlevel 1 (
 
 REM Check Python version compatibility (3.10-3.13 required for onnxruntime-gpu)
 for /f "tokens=2" %%i in ('python --version 2^>^&1') do set PYTHON_VERSION=%%i
-for /f "tokens=1,2 delims=." %%a in ("%%PYTHON_VERSION%%") do (
+for /f "tokens=1,2 delims=." %%a in ("!PYTHON_VERSION!") do (
     set PYTHON_MAJOR=%%a
     set PYTHON_MINOR=%%b
 )
 
 if defined PYTHON_MAJOR (
-    if %PYTHON_MAJOR% EQU 3 (
+    if !PYTHON_MAJOR! EQU 3 (
         if defined PYTHON_MINOR (
-            if %PYTHON_MINOR% GTR 13 (
+            if !PYTHON_MINOR! GTR 13 (
                 echo [ERROR] Python 3.14+ wird noch nicht unterstuetzt!
                 echo.
                 echo Das onnxruntime-gpu Paket unterstuetzt nur Python 3.10-3.13.
-                echo Aktuelle Version: %PYTHON_VERSION%
+                echo Aktuelle Version: !PYTHON_VERSION!
                 echo.
                 echo Bitte installiere Python 3.13 von:
                 echo https://www.python.org/downloads/release/python-3130/
