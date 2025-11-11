@@ -68,24 +68,24 @@ Write-ColorOutput "🔍 Checking configuration..." Blue
 if (-not (Test-Path .env)) {
     Write-ColorOutput "⚠️  No .env file found. Creating template..." Yellow
     @"
-# OpenAI Configuration
-OPENAI_API_KEY=sk-your-api-key-here
+# Groq Configuration
+GROQ_API_KEY=gsk_your-api-key-here
 
 # Optional: Local LLM Configuration
 # LOCAL_LLM_ENABLED=false
 "@ | Out-File -FilePath .env -Encoding UTF8
 
-    Write-ColorOutput "❗ Please edit .env and add your OpenAI API key" Red
+    Write-ColorOutput "❗ Please edit .env and add your Groq API key" Red
     Write-ColorOutput "   Then run this script again." Yellow
     exit 1
 }
 
 # Load and check API key
 $envContent = Get-Content .env -Raw
-if ($envContent -match 'OPENAI_API_KEY=(.+)') {
+if ($envContent -match 'GROQ_API_KEY=(.+)') {
     $apiKey = $matches[1].Trim()
-    if ($apiKey -eq "sk-your-api-key-here" -or [string]::IsNullOrEmpty($apiKey)) {
-        Write-ColorOutput "❌ Please set a valid OPENAI_API_KEY in .env file" Red
+    if ($apiKey -eq "gsk_your-api-key-here" -or [string]::IsNullOrEmpty($apiKey)) {
+        Write-ColorOutput "❌ Please set a valid GROQ_API_KEY in .env file" Red
         exit 1
     }
     Write-ColorOutput "✓ API key configured" Green

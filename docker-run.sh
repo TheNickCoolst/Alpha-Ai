@@ -55,21 +55,21 @@ echo -e "${BLUE}🔍 Checking configuration...${NC}"
 if [ ! -f .env ]; then
     echo -e "${YELLOW}⚠️  No .env file found. Creating template...${NC}"
     cat > .env << 'EOF'
-# OpenAI Configuration
-OPENAI_API_KEY=sk-your-api-key-here
+# Groq Configuration
+GROQ_API_KEY=gsk_your-api-key-here
 
 # Optional: Local LLM Configuration
 # LOCAL_LLM_ENABLED=false
 EOF
-    echo -e "${RED}❗ Please edit .env and add your OpenAI API key${NC}"
+    echo -e "${RED}❗ Please edit .env and add your Groq API key${NC}"
     echo -e "${YELLOW}   Then run this script again.${NC}"
     exit 1
 fi
 
 # Source .env to check API key
 source .env
-if [ "$OPENAI_API_KEY" == "sk-your-api-key-here" ] || [ -z "$OPENAI_API_KEY" ]; then
-    echo -e "${RED}❌ Please set a valid OPENAI_API_KEY in .env file${NC}"
+if [ "$GROQ_API_KEY" == "gsk_your-api-key-here" ] || [ -z "$GROQ_API_KEY" ]; then
+    echo -e "${RED}❌ Please set a valid GROQ_API_KEY in .env file${NC}"
     exit 1
 fi
 
@@ -83,10 +83,10 @@ if [ ! -f character_config.yaml ]; then
     # Replace API key in config
     if [[ "$OSTYPE" == "darwin"* ]]; then
         # macOS
-        sed -i '' "s/sk-YOURAPIKEY/$OPENAI_API_KEY/" character_config.yaml
+        sed -i '' "s/gsk_YOURAPIKEY/$GROQ_API_KEY/" character_config.yaml
     else
         # Linux
-        sed -i "s/sk-YOURAPIKEY/$OPENAI_API_KEY/" character_config.yaml
+        sed -i "s/gsk_YOURAPIKEY/$GROQ_API_KEY/" character_config.yaml
     fi
     echo -e "${GREEN}✓ Configuration created${NC}"
 fi

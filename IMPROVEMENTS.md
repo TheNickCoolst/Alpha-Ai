@@ -20,7 +20,7 @@
 
 ## Executive Summary
 
-Alpha AI is a **well-architected voice assistant** combining OpenAI GPT, GPT-SoVITS, and Faster-Whisper. The codebase demonstrates clean modularity and good documentation. However, there are **significant opportunities** to enhance user experience, technical robustness, and operational efficiency.
+Alpha AI is a **well-architected voice assistant** combining Groq LLM API, GPT-SoVITS, and Faster-Whisper. The codebase demonstrates clean modularity and good documentation. However, there are **significant opportunities** to enhance user experience, technical robustness, and operational efficiency.
 
 ### Key Findings
 
@@ -53,8 +53,8 @@ For a **solo maintainer**, focus on:
 
 ```
 ┌──────────────┐     ┌──────────────┐     ┌──────────────┐     ┌──────────────┐
-│   User       │────▶│  Faster-     │────▶│  OpenAI      │────▶│  GPT-        │
-│   Voice      │     │  Whisper     │     │  GPT-4o-mini │     │  SoVITS      │
+│   User       │────▶│  Faster-     │────▶│  Groq        │────▶│  GPT-        │
+│   Voice      │     │  Whisper     │     │  llama-3.3   │     │  SoVITS      │
 │   Input      │     │  (ASR)       │     │  (LLM)       │     │  (TTS)       │
 └──────────────┘     └──────────────┘     └──────────────┘     └──────────────┘
       │                     │                     │                     │
@@ -237,7 +237,7 @@ for chunk in response:
 
 ### 5. Local LLM Integration
 
-**Problem:** Dependency on OpenAI API (costs, privacy, requires internet).
+**Problem:** Dependency on Groq API (requires internet, potential rate limits).
 
 **Solution:** Optional local LLMs via Ollama or llama.cpp.
 
@@ -403,7 +403,7 @@ detected_lang = info.language
 │ PHASE 2: UX Improvements (Weeks 3-4)                       │
 ├─────────────────────────────────────────────────────────────┤
 │ □ Voice Activity Detection (Silero VAD)                     │
-│ □ OpenAI streaming implementation                           │
+│ □ Groq streaming implementation                             │
 │ □ Chunked TTS for parallel generation                       │
 │ □ Testing & bugfixes                                        │
 │ Expected Impact: Hands-free operation, 50% lower latency    │
@@ -435,7 +435,7 @@ detected_lang = info.language
 │ □ Ollama integration                                        │
 │ □ Model-switching UI                                        │
 │ □ Performance tuning                                        │
-│ □ Fallback logic (OpenAI → Local)                          │
+│ □ Fallback logic (Groq → Local)                            │
 │ Expected Impact: Offline capability, no recurring costs      │
 └─────────────────────────────────────────────────────────────┘
 
@@ -469,7 +469,7 @@ If time is limited, focus on these **3 quick wins**:
 Backend:
   Language: Python 3.11
   ASR: Faster-Whisper (base.en, CPU, float32)
-  LLM: OpenAI GPT-4o-mini
+  LLM: OpenAI llama-3.3-70b-versatile
   TTS: GPT-SoVITS (HTTP API)
   Audio: sounddevice, soundfile
 
@@ -486,7 +486,7 @@ Interface:
 Backend:
   Language: Python 3.11+
   ASR: Faster-Whisper (GPU-accelerated, int8)
-  LLM: OpenAI GPT-4o-mini + Ollama (fallback)
+  LLM: OpenAI llama-3.3-70b-versatile + Ollama (fallback)
   TTS: GPT-SoVITS (multi-emotion support)
   VAD: Silero VAD or WebRTC VAD
   Audio: sounddevice, soundfile
@@ -609,7 +609,7 @@ This pull request includes **immediately deployable improvements**:
 git checkout <this-branch>
 
 # 2. Create .env file
-echo "OPENAI_API_KEY=your-key-here" > .env
+echo "GROQ_API_KEY=your-key-here" > .env
 
 # 3. Deploy with one command
 ./docker-run.sh  # Auto-detects GPU

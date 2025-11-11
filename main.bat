@@ -60,9 +60,9 @@ if not exist "character_config.yaml" (
     ) else (
         REM Create minimal config
         (
-            echo OPENAI_API_KEY: sk-YOUR_API_KEY_HERE
+            echo GROQ_API_KEY: gsk_YOUR_API_KEY_HERE
             echo history_file: chat_history.json
-            echo model: "gpt-4o-mini"
+            echo model: "llama-3.3-70b-versatile"
             echo max_history_messages: 50
             echo.
             echo presets:
