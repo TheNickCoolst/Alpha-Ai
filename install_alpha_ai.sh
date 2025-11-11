@@ -6,13 +6,50 @@ echo "Alpha AI Voice Assistant Installation"
 echo "======================================="
 
 # Check Python version
-python_version=$(python3 --version 2>&1 | awk '{print $2}' | cut -d. -f1,2)
+python_version=$(python3 --version 2>&1 | awk '{print $2}')
+python_major_minor=$(echo "$python_version" | cut -d. -f1,2)
 echo "Python version: $python_version"
 
-if [ "$(echo "$python_version < 3.10" | bc)" -eq 1 ]; then
-    echo "Error: Python 3.10 or higher is required"
-    exit 1
+# Check if Python version is between 3.10 and 3.13
+if command -v bc &> /dev/null; then
+    if [ "$(echo "$python_major_minor < 3.10" | bc)" -eq 1 ]; then
+        echo "Error: Python 3.10 or higher is required"
+        echo "Current version: $python_version"
+        exit 1
+    fi
+
+    if [ "$(echo "$python_major_minor >= 3.14" | bc)" -eq 1 ]; then
+        echo "Error: Python 3.14+ is not yet supported!"
+        echo ""
+        echo "The onnxruntime-gpu package currently only supports Python 3.10-3.13"
+        echo "Current version: $python_version"
+        echo ""
+        echo "Please install Python 3.13 from: https://www.python.org/downloads/release/python-3130/"
+        exit 1
+    fi
+else
+    # Fallback if bc is not available
+    major=$(echo "$python_major_minor" | cut -d. -f1)
+    minor=$(echo "$python_major_minor" | cut -d. -f2)
+
+    if [ "$major" -lt 3 ] || ([ "$major" -eq 3 ] && [ "$minor" -lt 10 ]); then
+        echo "Error: Python 3.10 or higher is required"
+        echo "Current version: $python_version"
+        exit 1
+    fi
+
+    if [ "$major" -eq 3 ] && [ "$minor" -ge 14 ]; then
+        echo "Error: Python 3.14+ is not yet supported!"
+        echo ""
+        echo "The onnxruntime-gpu package currently only supports Python 3.10-3.13"
+        echo "Current version: $python_version"
+        echo ""
+        echo "Please install Python 3.13 from: https://www.python.org/downloads/release/python-3130/"
+        exit 1
+    fi
 fi
+
+echo "✓ Python version is compatible"
 
 # Install uv package manager
 echo ""
